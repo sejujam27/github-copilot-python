@@ -33,11 +33,19 @@ source .venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+## Running Tests
+```bash
+pytest
+```
 
 6. Run the Flask app.
 
 ```bash
 python app.py
+```
+
+```bash
+flask --app app run
 ```
 
 7. Open http://127.0.0.1:5000 in your browser.
