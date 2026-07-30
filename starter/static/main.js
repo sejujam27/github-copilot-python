@@ -102,7 +102,7 @@ async function checkSolution() {
   const res = await fetch('/check', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({board})
+    body: JSON.stringify({board, puzzle})
   });
   const data = await res.json();
   const msg = document.getElementById('message');

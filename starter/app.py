@@ -144,10 +144,22 @@ def check_solution():
         validate_board(board)
     except ValueError as e:
         return error_response(str(e), 400)
-
-    solution = get_current_solution()
-    if solution is None:
-        return error_response('No game in progress', 400)
+    # Prefer a puzzle posted by the client. This avoids relying on
+    # process-local in-memory state which can be inconsistent across
+    # processes or when the dev reloader restarts the server.
+    posted_puzzle = data.get('puzzle')
+    if posted_puzzle is not None:
+        try:
+            validate_board(posted_puzzle)
+        except ValueError as e:
+            return error_response('Invalid `puzzle` provided: ' + str(e), 400)
+        solution = sudoku_logic.solve_sudoku(posted_puzzle)
+        if solution is None:
+            return error_response('Unable to compute solution for provided puzzle', 400)
+    else:
+        solution = get_current_solution()
+        if solution is None:
+            return error_response('No game in progress', 400)
     incorrect = []
     for i in range(sudoku_logic.SIZE):
         for j in range(sudoku_logic.SIZE):

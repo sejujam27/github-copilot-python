@@ -94,3 +94,16 @@ def generate_sudoku_puzzle(clues=35):
     remove_cells_from_board(board, clues)
     puzzle = copy_board(board)
     return puzzle, solution
+
+
+def solve_sudoku(puzzle):
+    """Return a solved board for the given partial ``puzzle`` or ``None``.
+
+    Makes a deep copy of the provided puzzle and attempts to fill it using
+    the backtracking solver. Returns the completed board on success or
+    ``None`` if no solution is found.
+    """
+    board = copy_board(puzzle)
+    if fill_board_recursive(board):
+        return board
+    return None
