@@ -6,40 +6,54 @@
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <h1>Sudoku Game</h1>
-  <div class="status-bar">
-    <div class="difficulty-control">
-      <label for="difficulty-select">Difficulty:</label>
-      <select id="difficulty-select">
-        <option value="easy">Easy</option>
-        <option value="medium" selected>Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-    </div>
-    <div class="timer" id="game-timer">Time: 00:00</div>
-    <button id="theme-toggle" class="theme-toggle">Dark Mode</button>
-  </div>
-  <div id="sudoku-board"></div>
-  <div class="controls">
-    <button id="new-game">New Game</button>
-    <button id="check-solution">Check Solution</button>
-    <span id="message"></span>
-  </div>
-  <div class="leaderboard">
-    <h2>Top 10 Leaderboard</h2>
-    <table id="leaderboard-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Difficulty</th>
-          <th>Time</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div id="leaderboard-empty">No completed games yet.</div>
-    <button id="clear-leaderboard">Clear Leaderboard</button>
+  <div class="app-container">
+    <header class="page-header">
+      <h1>Sudoku Game</h1>
+      <div class="status-bar">
+        <div class="difficulty-control">
+          <label for="difficulty-select">Difficulty:</label>
+          <select id="difficulty-select">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div class="timer" id="game-timer">Time: 00:00</div>
+        <button id="theme-toggle" class="btn secondary theme-toggle" aria-pressed="false">Dark Mode</button>
+      </div>
+    </header>
+
+    <main class="content-grid">
+      <section class="game-panel">
+        <div id="sudoku-board"></div>
+        <div class="controls">
+          <button id="new-game" class="btn primary">New Game</button>
+          <button id="check-solution" class="btn primary">Check Solution</button>
+          <span id="message"></span>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="leaderboard">
+          <h2>Top 10 Leaderboard</h2>
+          <div class="leaderboard-scroll">
+            <table id="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Difficulty</th>
+                  <th>Time</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="leaderboard-empty">No completed games yet.</div>
+          <button id="clear-leaderboard" class="btn secondary">Clear Leaderboard</button>
+        </div>
+      </aside>
+    </main>
   </div>
   <script src="/static/main.js"></script>
 </body>

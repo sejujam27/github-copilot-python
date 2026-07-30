@@ -15,6 +15,8 @@ function createBoardElement() {
       input.className = 'sudoku-cell';
       input.dataset.row = i;
       input.dataset.col = j;
+      // box index 0..8 used for 3x3 subgrid styling
+      input.dataset.box = (Math.floor(i / 3) * 3 + Math.floor(j / 3)).toString();
       input.addEventListener('input', (e) => {
         const val = e.target.value.replace(/[^1-9]/g, '');
         e.target.value = val;
@@ -139,6 +141,7 @@ function toggleTheme() {
   const isDark = body.classList.toggle('dark');
   if (button) {
     button.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+    button.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   }
 }
 
@@ -208,6 +211,8 @@ window.addEventListener('load', () => {
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
     themeToggle.addEventListener('click', toggleTheme);
+    // initialize aria state based on current theme
+    themeToggle.setAttribute('aria-pressed', document.body.classList.contains('dark') ? 'true' : 'false');
   }
   renderLeaderboard();
   // initialize
