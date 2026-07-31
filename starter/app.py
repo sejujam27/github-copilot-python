@@ -168,5 +168,33 @@ def check_solution():
     return jsonify({'incorrect': incorrect})
 
 
+@app.route('/hint', methods=['POST'])
+def provide_hint():
+    """Return a hint from the current solution for an empty cell."""
+    data = request.get_json(silent=True)
+    if data is None:
+        return error_response('Invalid or missing JSON body', 400)
+
+    board = data.get('board')
+    if board is None:
+        return error_response('Missing `board` in request body', 400)
+
+    try:
+        validate_board(board)
+    except ValueError as e:
+        return error_response(str(e), 400)
+
+    solution = get_current_solution()
+    if solution is None:
+        return error_response('No game in progress', 400)
+
+    for row in range(sudoku_logic.SIZE):
+        for col in range(sudoku_logic.SIZE):
+            if board[row][col] == 0:
+                return jsonify({'row': row, 'col': col, 'value': solution[row][col]})
+
+    return error_response('No empty cells remain', 400)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

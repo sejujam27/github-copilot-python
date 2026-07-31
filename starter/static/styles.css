@@ -34,6 +34,9 @@ body.dark {
     --border: #4b5563;
     --button-bg: #60a5fa;
     --button-bg-hover: #3b82f6;
+    --timer-bg: #0f172a;
+    --timer-border: #64748b;
+    --timer-text: #f8fafc;
     --error: #fca5a5;
     --success: #86efac;
     --box-alt: rgba(255, 255, 255, 0.02);
@@ -279,7 +282,7 @@ h1 {
 
 .timer {
     font-size: 16px;
-    color: var(--text);
+    color: var(--timer-text, var(--text));
     background: var(--timer-bg);
     border: 1px solid var(--timer-border);
     padding: 8px 14px;

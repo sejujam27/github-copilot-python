@@ -1,6 +1,7 @@
 // Client-side rendering and interaction for the Flask-backed Sudoku
 const SIZE = 9;
 let puzzle = [];
+let hintsUsed = 0;
 
 function createBoardElement() {
   const boardDiv = document.getElementById('sudoku-board');
@@ -83,8 +84,49 @@ async function newGame() {
   const res = await fetch(`/new?difficulty=${encodeURIComponent(difficulty)}`);
   const data = await res.json();
   renderPuzzle(data.puzzle);
+  hintsUsed = 0;
   resetTimer();
   document.getElementById('message').innerText = '';
+}
+
+async function getHint() {
+  const boardDiv = document.getElementById('sudoku-board');
+  const inputs = boardDiv.getElementsByTagName('input');
+  const board = [];
+  for (let i = 0; i < SIZE; i++) {
+    board[i] = [];
+    for (let j = 0; j < SIZE; j++) {
+      const idx = i * SIZE + j;
+      const val = inputs[idx].value;
+      board[i][j] = val ? parseInt(val, 10) : 0;
+    }
+  }
+
+  const res = await fetch('/hint', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({board})
+  });
+  const data = await res.json();
+  const msg = document.getElementById('message');
+
+  if (data.error) {
+    msg.style.color = '#d32f2f';
+    msg.innerText = data.error;
+    return;
+  }
+
+  const input = boardDiv.querySelector(`input[data-row="${data.row}"][data-col="${data.col}"]`);
+  if (input) {
+    input.value = data.value;
+    input.disabled = true;
+    input.classList.add('locked');
+    input.classList.remove('incorrect');
+    hintsUsed += 1;
+  }
+
+  msg.style.color = '#388e3c';
+  msg.innerText = `Hint used (${hintsUsed})`;
 }
 
 async function checkSolution() {
@@ -126,7 +168,8 @@ async function checkSolution() {
       timerInterval = null;
     }
     const difficulty = document.getElementById('difficulty-select').value;
-    addLeaderboardEntry(difficulty, elapsedSeconds);
+    const playerName = (prompt("Enter your name:") || "").trim() || "Anonymous";
+    addLeaderboardEntry(playerName, difficulty, elapsedSeconds, hintsUsed);
     msg.style.color = '#388e3c';
     msg.innerText = `Congratulations! You solved it in ${formatTime(elapsedSeconds)}.`;
   } else {
@@ -147,7 +190,24 @@ function toggleTheme() {
 
 function loadLeaderboard() {
   const stored = localStorage.getItem('sudokuLeaderboard');
-  return stored ? JSON.parse(stored) : [];
+  if (!stored) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed)
+      ? parsed.map(entry => ({
+          playerName: entry.playerName || 'Anonymous',
+          difficulty: entry.difficulty || 'Unknown',
+          time: entry.time ?? 0,
+          hints: entry.hints ?? 0,
+          completedAt: entry.completedAt || Date.now()
+        }))
+      : [];
+  } catch (error) {
+    return [];
+  }
 }
 
 function saveLeaderboard(entries) {
@@ -178,19 +238,34 @@ function renderLeaderboard() {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${index + 1}</td>
+      <td>${entry.playerName || 'Anonymous'}</td>
       <td>${entry.difficulty}</td>
       <td>${formatTimeLabel(entry.time)}</td>
+      <td>${entry.hints ?? 0}</td>
       <td>${formatDateLabel(entry.completedAt)}</td>
     `;
     tbody.appendChild(row);
   });
 }
 
-function addLeaderboardEntry(difficulty, timeSeconds) {
+function addLeaderboardEntry(playerName, difficulty, timeSeconds, hintsUsed) {
   const entries = loadLeaderboard();
+  const normalizedName = (playerName || 'Anonymous').trim();
+  const duplicate = entries.some(entry =>
+    entry.playerName === normalizedName &&
+    entry.difficulty === difficulty &&
+    entry.time === timeSeconds
+  );
+
+  if (duplicate) {
+    return;
+  }
+
   entries.push({
+    playerName: normalizedName,
     difficulty,
     time: timeSeconds,
+    hints: hintsUsed || 0,
     completedAt: Date.now()
   });
   entries.sort((a, b) => a.time - b.time);
@@ -206,6 +281,7 @@ function clearLeaderboard() {
 // Wire buttons
 window.addEventListener('load', () => {
   document.getElementById('new-game').addEventListener('click', newGame);
+  document.getElementById('hint-button').addEventListener('click', getHint);
   document.getElementById('check-solution').addEventListener('click', checkSolution);
   document.getElementById('clear-leaderboard').addEventListener('click', clearLeaderboard);
   const themeToggle = document.getElementById('theme-toggle');

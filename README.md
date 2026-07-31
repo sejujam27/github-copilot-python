@@ -2,104 +2,104 @@
 
 ## Overview
 
-This project focuses on improving a legacy Sudoku web application developed using Python and Flask. With the assistance of GitHub Copilot, the application was reorganized into a cleaner and more maintainable structure while introducing several gameplay enhancements, UI improvements, accessibility features, and automated testing.
+This project modernizes a legacy Sudoku web application built with **Python** and **Flask** using **GitHub Copilot** as a development assistant. The application has been enhanced with improved gameplay, a modern user interface, accessibility improvements, automated testing, and responsive design.
 
-Rather than simply accepting AI-generated code, GitHub Copilot was used as a development assistant to help analyze existing code, suggest implementations, generate tests, and improve the application's overall quality.
+GitHub Copilot was used throughout development to assist with refactoring, feature implementation, UI improvements, testing, and documentation. All generated suggestions were reviewed before being accepted.
 
 ---
 
-# Key Features
+# Features
 
 ## Gameplay
 
-* Generates Sudoku puzzles that always have a single valid solution.
-* Supports three difficulty levels:
-
-  * Easy
-  * Medium
-  * Hard
-* Prevents editing of pre-filled cells.
-* Validates user inputs in real time.
-* Includes a **Check Puzzle** option to verify the current board.
-* Provides a **Hint** feature that fills one correct value and locks that cell.
-* Detects when the puzzle has been completed successfully.
-* Displays a congratulatory message after completion.
-* Tracks the total game time with a built-in timer.
-
----
-
-## User Interface
-
-* Responsive design for desktop, tablet, and mobile screens.
-* Light and Dark mode support.
-* Different background colors for each 3×3 Sudoku block to improve readability.
-* Cleaner interface for better user experience.
-* Accessibility improvements based on WCAG 2.1 AA recommendations.
+- Generates Sudoku puzzles with **exactly one unique solution**.
+- Supports three difficulty levels:
+  - Easy (45 clues)
+  - Medium (35 clues)
+  - Hard (25 clues)
+- Prevents editing of pre-filled cells.
+- Real-time input validation.
+- Check Puzzle feature to verify incorrect entries.
+- Hint feature that:
+  - Reveals one correct empty cell.
+  - Locks the hinted cell.
+  - Tracks the number of hints used.
+- Displays a congratulatory message when the puzzle is completed.
+- Built-in game timer.
 
 ---
 
 ## Leaderboard
 
-A browser-based leaderboard records the fastest completed games.
+The browser-based leaderboard stores:
 
-Information stored includes:
+- Player Name
+- Difficulty
+- Completion Time
+- Hint Count
+- Completion Date
 
-* Player Name
-* Completion Time
-* Selected Difficulty
-* Number of Hints Used
+Additional features:
 
-Additional functionality:
+- Prevents duplicate entries.
+- Stores only the fastest Top 10 scores.
+- Uses Local Storage to preserve scores after refreshing the browser.
 
-* Displays the Top 10 best scores.
-* Uses browser Local Storage.
-* Leaderboard data remains available after refreshing the page.
+---
+
+## User Interface
+
+- Responsive design for desktop, tablet, and mobile devices.
+- Light and Dark mode.
+- Improved Sudoku grid styling with highlighted 3×3 sections.
+- Improved accessibility based on WCAG recommendations.
+- Modern and cleaner interface.
 
 ---
 
 # Technologies Used
 
-* Python 3
-* Flask
-* HTML5
-* CSS3
-* JavaScript
-* GitHub Copilot
-* Pytest
+- Python 3
+- Flask
+- HTML5
+- CSS3
+- JavaScript
+- GitHub Copilot
+- Pytest
 
 ---
 
 # Installation
 
-### Clone the repository
+## Clone the repository
 
 ```bash
 git clone https://github.com/sejujam27/github-copilot-python.git
 ```
 
-### Navigate to the project
+## Navigate to the project
 
 ```bash
 cd github-copilot-python/starter
 ```
 
-### Create a virtual environment
+## Create a virtual environment
 
-**Windows**
+### Windows
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 ```
 
-**Linux / macOS**
+### Linux / macOS
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### Install project dependencies
+## Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -109,15 +109,21 @@ pip install -r requirements.txt
 
 # Running the Application
 
-Start the Flask development server using:
+Run either command:
+
+```bash
+python app.py
+```
+
+or
 
 ```bash
 flask --app app run
 ```
 
-Open your browser and visit:
+Open your browser:
 
-```text
+```
 http://127.0.0.1:5000
 ```
 
@@ -125,13 +131,26 @@ http://127.0.0.1:5000
 
 # Running Tests
 
-Run the automated test suite using:
+Execute the automated test suite:
 
 ```bash
 pytest
 ```
 
-This command executes all tests inside the **tests** directory to verify that the application's main features work correctly.
+Expected output:
+
+```
+15 passed
+```
+
+The tests verify:
+
+- Sudoku puzzle generation
+- Unique solution guarantee
+- Difficulty levels
+- Hint functionality
+- Flask routes
+- Leaderboard functionality
 
 ---
 
@@ -143,81 +162,144 @@ github-copilot-python/
 ├── Screenshots/
 ├── starter/
 │   ├── app.py
-│   ├── instruction.md
-│   ├── prompts.json
+│   ├── sudoku_logic.py
 │   ├── requirements.txt
+│   ├── pytest.ini
+│   ├── instruction.md
 │   ├── static/
-│   ├── sudoku/
+│   │   ├── main.js
+│   │   └── styles.css
 │   ├── templates/
-│   └── tests/
+│   │   └── index.html
+│   ├── tests/
+│   │   ├── conftest.py
+│   │   └── test_app.py
+│   └── README.md
+│
+├── Screenshots/
+├── .gitignore
+├── CODEOWNERS
+├── LICENSE.txt
 └── README.md
 ```
 
 ---
 
-# Using GitHub Copilot
+# GitHub Copilot Usage
 
-GitHub Copilot supported different stages of the project, including planning, development, testing, and UI improvements.
+GitHub Copilot was used throughout the project to assist with:
 
-It was used to assist with:
+- Refactoring legacy code
+- Implementing Sudoku puzzle generation
+- Creating the unique solution algorithm
+- Adding difficulty selection
+- Building the Hint feature
+- Implementing the leaderboard
+- Improving UI responsiveness
+- Creating Dark Mode
+- Improving accessibility
+- Writing automated tests
+- Generating documentation
 
-* Refactoring the legacy application into modular code
-* Improving code readability
-* Implementing Sudoku puzzle generation
-* Adding difficulty selection
-* Creating the timer functionality
-* Developing the Hint feature
-* Implementing the Check Puzzle feature
-* Adding real-time input validation
-* Detecting puzzle completion
-* Building the browser-based leaderboard
-* Improving responsiveness
-* Adding Dark Mode
-* Enhancing accessibility
-* Writing and validating automated tests
-
-All generated suggestions were reviewed before being incorporated into the project.
+Every suggestion generated by Copilot was reviewed and validated before being accepted.
 
 ---
 
-# Evaluating GitHub Copilot Suggestions
+# Copilot Evaluation
 
-During development, GitHub Copilot suggested multiple ways to implement the leaderboard.
+During development, GitHub Copilot generated multiple implementation suggestions.
 
-One recommendation involved storing leaderboard data through a backend API, while another suggested using the browser's Local Storage.
+One suggestion recommended removing the unique solution validation to simplify puzzle generation. This suggestion was **rejected** because it would allow puzzles with multiple valid solutions, violating the project requirement that every generated Sudoku puzzle must have exactly one unique solution.
 
-After comparing both options, the Local Storage approach was selected because it fully met the project requirements while keeping the application lightweight and easy to maintain. A server-based solution was considered unnecessary for a locally stored Top 10 leaderboard.
-
-This demonstrates thoughtful evaluation of Copilot's recommendations instead of accepting every suggestion without review.
+This demonstrates careful evaluation of AI-generated suggestions instead of accepting every recommendation.
 
 ---
 
 # Screenshots
 
-The **Screenshots** folder contains examples of GitHub Copilot prompts and responses related to:
+The **Screenshots** folder contains:
 
-* Refactoring the project structure
-* Sudoku puzzle generation
-* Setting up automated testing
-* Implementing the Hint feature
-* Creating the Top 10 leaderboard
-* Styling the Sudoku grid
-* Responsive UI improvements
-* Accessibility enhancements
-* Reviewing alternative Copilot-generated solutions
-
-The **Final_Output** folder contains screenshots of the completed application.
+- Copilot prompts
+- Copilot responses
+- Unique solution implementation
+- Difficulty implementation
+- Local Storage implementation
+- Grid styling improvements
+- Testing screenshots
+- Explicit rejected Copilot suggestion
+- Light Mode
+- Dark Mode
+- Mobile responsive view
+- Hint feature
+- Leaderboard
+- Solved puzzle
+- Tests passing
 
 ---
 
-# Additional Enhancements
+# New Features Added
 
-The project also includes:
+### Unique Solution Guarantee
 
-* Responsive design across multiple devices
-* WCAG 2.1 AA accessibility improvements
-* Dark and Light themes
-* Reusable GitHub Copilot prompts stored in **prompts.json**
+A backtracking-based solution counter ensures every generated Sudoku puzzle has exactly one valid solution.
+
+### Hint Feature
+
+- Fills one correct empty cell.
+- Locks hinted cells.
+- Tracks the total number of hints used.
+
+### Enhanced Leaderboard
+
+Stores:
+
+- Player Name
+- Difficulty
+- Completion Time
+- Hint Count
+- Completion Date
+
+Additional improvements:
+
+- Duplicate prevention
+- Top 10 fastest scores
+- Local Storage persistence
+
+### User Interface Improvements
+
+- Responsive layout
+- Dark Mode
+- Improved Sudoku grid styling
+- Accessibility enhancements
+
+### Automated Testing
+
+Additional tests verify:
+
+- Unique solution generation
+- Difficulty clue counts
+- Hint functionality
+- Leaderboard functionality
+- Flask routes
+
+---
+
+# Project Status
+
+✅ Completed
+
+Implemented features:
+
+- Unique solution Sudoku generation
+- Difficulty selection
+- Hint system
+- Player leaderboard
+- Local Storage persistence
+- Dark Mode
+- Responsive design
+- Accessibility improvements
+- Automated testing (15 passing tests)
+- GitHub Copilot documentation
 
 ---
 

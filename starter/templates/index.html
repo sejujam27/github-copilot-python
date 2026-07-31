@@ -27,10 +27,18 @@
       <section class="game-panel">
         <div id="sudoku-board"></div>
         <div class="controls">
-          <button id="new-game" class="btn primary">New Game</button>
-          <button id="check-solution" class="btn primary">Check Solution</button>
-          <span id="message"></span>
-        </div>
+  <button id="new-game" class="btn primary">New Game</button>
+
+  <button id="hint-button" class="btn secondary">
+      Hint
+  </button>
+
+  <button id="check-solution" class="btn primary">
+      Check Solution
+  </button>
+
+  <span id="message"></span>
+</div>
       </section>
 
       <aside class="sidebar">
@@ -41,8 +49,10 @@
               <thead>
                 <tr>
                   <th>#</th>
+                  <th>Player</th>
                   <th>Difficulty</th>
                   <th>Time</th>
+                  <th>Hint Count</th>
                   <th>Date</th>
                 </tr>
               </thead>
