@@ -1,7 +1,30 @@
 // Client-side rendering and interaction for the Flask-backed Sudoku
 const SIZE = 9;
 let puzzle = [];
+let solution = [];
 let hintsUsed = 0;
+
+function validateCell(input) {
+  if (!input || input.disabled || solution.length !== SIZE) {
+    return;
+  }
+
+  const row = Number(input.dataset.row);
+  const col = Number(input.dataset.col);
+  const value = input.value;
+
+  if (!value) {
+    input.classList.remove('incorrect');
+    return;
+  }
+
+  const parsed = parseInt(value, 10);
+  if (Number.isNaN(parsed) || solution[row][col] !== parsed) {
+    input.classList.add('incorrect');
+  } else {
+    input.classList.remove('incorrect');
+  }
+}
 
 function createBoardElement() {
   const boardDiv = document.getElementById('sudoku-board');
@@ -21,6 +44,7 @@ function createBoardElement() {
       input.addEventListener('input', (e) => {
         const val = e.target.value.replace(/[^1-9]/g, '');
         e.target.value = val;
+        validateCell(e.target);
       });
       rowDiv.appendChild(input);
     }
@@ -28,8 +52,9 @@ function createBoardElement() {
   }
 }
 
-function renderPuzzle(puz) {
+function renderPuzzle(puz, sol) {
   puzzle = puz;
+  solution = Array.isArray(sol) ? sol : [];
   createBoardElement();
   const boardDiv = document.getElementById('sudoku-board');
   const inputs = boardDiv.getElementsByTagName('input');
@@ -83,7 +108,7 @@ async function newGame() {
   const difficulty = document.getElementById('difficulty-select').value;
   const res = await fetch(`/new?difficulty=${encodeURIComponent(difficulty)}`);
   const data = await res.json();
-  renderPuzzle(data.puzzle);
+  renderPuzzle(data.puzzle, data.solution);
   hintsUsed = 0;
   resetTimer();
   document.getElementById('message').innerText = '';
