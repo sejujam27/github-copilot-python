@@ -111,8 +111,11 @@ h1 {
     box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
 }
 
-/* Alternate subtle backgrounds for 3x3 boxes to improve visual grouping.
-   JS writes `data-box` on each input; prefilled cells keep their stronger surface color. */
+/* Alternate 3x3 block backgrounds for better visual grouping in both themes. */
+.sudoku-cell:not(.prefilled) {
+    background-color: var(--surface);
+}
+
 .sudoku-cell:not(.prefilled)[data-box="0"],
 .sudoku-cell:not(.prefilled)[data-box="2"],
 .sudoku-cell:not(.prefilled)[data-box="4"],
