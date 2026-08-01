@@ -4,27 +4,162 @@ let puzzle = [];
 let solution = [];
 let hintsUsed = 0;
 
-function validateCell(input) {
-  if (!input || input.disabled || solution.length !== SIZE) {
-    return;
+
+function collectBoard() {
+  const boardDiv = document.getElementById('sudoku-board');
+  const inputs = boardDiv.getElementsByTagName('input');
+  const board = [];
+
+  for (let i = 0; i < SIZE; i++) {
+    board[i] = [];
+    for (let j = 0; j < SIZE; j++) {
+      const idx = i * SIZE + j;
+      const val = inputs[idx].value;
+      board[i][j] = val ? parseInt(val, 10) : 0;
+    }
   }
 
-  const row = Number(input.dataset.row);
-  const col = Number(input.dataset.col);
-  const value = input.value;
-
-  if (!value) {
-    input.classList.remove('incorrect');
-    return;
-  }
-
-  const parsed = parseInt(value, 10);
-  if (Number.isNaN(parsed) || solution[row][col] !== parsed) {
-    input.classList.add('incorrect');
-  } else {
-    input.classList.remove('incorrect');
-  }
+  return board;
 }
+
+function clearCellErrors() {
+    document.querySelectorAll('.sudoku-cell').forEach(input => {
+        input.classList.remove('incorrect');
+    });
+}
+
+/*
+GitHub Copilot suggested an approach for implementing live
+Sudoku conflict highlighting.
+
+After reviewing the suggestion, I adapted the implementation
+to detect duplicate values in rows, columns, and 3x3 subgrids,
+because the project requires immediate visual feedback for
+invalid moves while the user is typing. This approach checks
+the current board state instead of relying only on the solved puzzle.
+*/
+
+function getConflictingPositions(board) {
+
+  const conflicts = new Set();
+
+  function mark(row, col) {
+    if (board[row][col] !== 0) {
+      conflicts.add(`${row}-${col}`);
+    }
+  }
+
+  // Row conflicts
+  for (let row = 0; row < SIZE; row++) {
+
+    const seen = new Map();
+
+    for (let col = 0; col < SIZE; col++) {
+
+      const value = board[row][col];
+
+      if (value === 0) continue;
+
+      if (seen.has(value)) {
+
+        mark(row, seen.get(value));
+        mark(row, col);
+
+      } else {
+
+        seen.set(value, col);
+
+      }
+    }
+  }
+
+  // Column conflicts
+  for (let col = 0; col < SIZE; col++) {
+
+    const seen = new Map();
+
+    for (let row = 0; row < SIZE; row++) {
+
+      const value = board[row][col];
+
+      if (value === 0) continue;
+
+      if (seen.has(value)) {
+
+        mark(seen.get(value), col);
+        mark(row, col);
+
+      } else {
+
+        seen.set(value, row);
+
+      }
+    }
+  }
+
+  // Box conflicts
+  for (let boxRow = 0; boxRow < 3; boxRow++) {
+
+    for (let boxCol = 0; boxCol < 3; boxCol++) {
+
+      const seen = new Map();
+
+      for (let r = 0; r < 3; r++) {
+
+        for (let c = 0; c < 3; c++) {
+
+          const row = boxRow * 3 + r;
+          const col = boxCol * 3 + c;
+
+          const value = board[row][col];
+
+          if (value === 0) continue;
+
+          if (seen.has(value)) {
+
+            const [pr, pc] = seen.get(value);
+
+            mark(pr, pc);
+            mark(row, col);
+
+          } else {
+
+            seen.set(value, [row, col]);
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+  return conflicts;
+}
+
+function applyRealtimeValidation() {
+
+  const board = collectBoard();
+
+  const conflicts = getConflictingPositions(board);
+
+  clearCellErrors();
+
+  conflicts.forEach(pos => {
+    const [row, col] = pos.split('-').map(Number);
+
+    const input = document.querySelector(
+      `input[data-row="${row}"][data-col="${col}"]`
+    );
+
+    if (input) {
+      input.classList.add('incorrect');
+    }
+  });
+}
+
 
 function createBoardElement() {
   const boardDiv = document.getElementById('sudoku-board');
@@ -42,10 +177,14 @@ function createBoardElement() {
       // box index 0..8 used for 3x3 subgrid styling
       input.dataset.box = (Math.floor(i / 3) * 3 + Math.floor(j / 3)).toString();
       input.addEventListener('input', (e) => {
-        const val = e.target.value.replace(/[^1-9]/g, '');
-        e.target.value = val;
-        validateCell(e.target);
-      });
+
+    const val = e.target.value.replace(/[^1-9]/g, '');
+
+    e.target.value = val;
+
+    applyRealtimeValidation();
+
+});
       rowDiv.appendChild(input);
     }
     boardDiv.appendChild(rowDiv);
@@ -117,15 +256,7 @@ async function newGame() {
 async function getHint() {
   const boardDiv = document.getElementById('sudoku-board');
   const inputs = boardDiv.getElementsByTagName('input');
-  const board = [];
-  for (let i = 0; i < SIZE; i++) {
-    board[i] = [];
-    for (let j = 0; j < SIZE; j++) {
-      const idx = i * SIZE + j;
-      const val = inputs[idx].value;
-      board[i][j] = val ? parseInt(val, 10) : 0;
-    }
-  }
+  const board = collectBoard();
 
   const res = await fetch('/hint', {
     method: 'POST',
@@ -144,8 +275,10 @@ async function getHint() {
   const input = boardDiv.querySelector(`input[data-row="${data.row}"][data-col="${data.col}"]`);
   if (input) {
     input.value = data.value;
+    applyRealtimeValidation();
     input.disabled = true;
     input.classList.add('locked');
+    input.classList.add('hint-cell');
     input.classList.remove('incorrect');
     hintsUsed += 1;
   }
@@ -157,15 +290,8 @@ async function getHint() {
 async function checkSolution() {
   const boardDiv = document.getElementById('sudoku-board');
   const inputs = boardDiv.getElementsByTagName('input');
-  const board = [];
-  for (let i = 0; i < SIZE; i++) {
-    board[i] = [];
-    for (let j = 0; j < SIZE; j++) {
-      const idx = i * SIZE + j;
-      const val = inputs[idx].value;
-      board[i][j] = val ? parseInt(val, 10) : 0;
-    }
-  }
+  const board = collectBoard();
+  
   const res = await fetch('/check', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -182,10 +308,13 @@ async function checkSolution() {
   for (let idx = 0; idx < inputs.length; idx++) {
     const inp = inputs[idx];
     if (inp.disabled) continue;
-    inp.className = 'sudoku-cell';
-    if (incorrect.has(idx)) {
-      inp.className = 'sudoku-cell incorrect';
-    }
+    inp.classList.remove('incorrect');
+
+if (incorrect.has(idx)) {
+
+    inp.classList.add('incorrect');
+
+}
   }
   if (incorrect.size === 0) {
     if (timerInterval) {

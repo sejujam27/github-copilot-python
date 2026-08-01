@@ -116,11 +116,11 @@ h1 {
     background-color: var(--surface);
 }
 
-.sudoku-cell:not(.prefilled)[data-box="0"],
-.sudoku-cell:not(.prefilled)[data-box="2"],
-.sudoku-cell:not(.prefilled)[data-box="4"],
-.sudoku-cell:not(.prefilled)[data-box="6"],
-.sudoku-cell:not(.prefilled)[data-box="8"] {
+.sudoku-cell:not(.prefilled):not(.incorrect)[data-box="0"],
+.sudoku-cell:not(.prefilled):not(.incorrect)[data-box="2"],
+.sudoku-cell:not(.prefilled):not(.incorrect)[data-box="4"],
+.sudoku-cell:not(.prefilled):not(.incorrect)[data-box="6"],
+.sudoku-cell:not(.prefilled):not(.incorrect)[data-box="8"] {
     background-color: var(--box-alt);
 }
 
@@ -148,8 +148,14 @@ h1 {
     outline: none;
 }
 
+.sudoku-cell.hint-cell {
+    background: #c8f7c5;
+    color: #1b5e20;
+    font-weight: bold;
+}
+
 .sudoku-cell.incorrect {
-    background: #ffcdd2;
+    background-color: #ffcdd2 !important;
 }
 
 .sudoku-cell:nth-child(3),
